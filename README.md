@@ -46,6 +46,8 @@ variable a estimar.
 5. **Residuales.** Se analizan los errores del conjunto de prueba por grupo de
    edad para revisar si la forma lineal es adecuada.
 6. **Predicción.** Se estima el ingreso para edades entre 20 y 65 años.
+7. **Costo computacional.** Se cronometra cada etapa, se mide la memoria y se
+   registra el peso de los archivos del taller.
 
 ## Resultados
 
@@ -68,6 +70,35 @@ Métricas (R² sin unidades; MAE y RMSE en unidades de ingreso):
 | Polinomio de grado 2 (contraste) | Prueba | 0,0280 | 3.765 | 5.581 |
 
 Predicciones de la recta: 7.040 a los 20 años y 7.763 a los 65 años.
+
+## Costo computacional
+
+Medido con el propio cuaderno (sección 8) en una ejecución local: Intel Core
+i7-8750H (6 núcleos, 12 procesadores lógicos), 15,9 GiB de RAM, Windows 11
+Home, Python 3.14.3 y scikit-learn 1.9.0. Cada etapa se repitió 200 veces
+(5 en la lectura del archivo Excel) y se reporta el promedio y la desviación
+estándar.
+
+| Etapa | Tiempo medio (ms) | Desviación (ms) |
+|---|---|---|
+| Lectura de `data.xlsx` | 558,195 | 34,784 |
+| Partición 80/20 | 1,136 | 0,092 |
+| Entrenamiento lineal | 1,355 | 0,089 |
+| Entrenamiento cuadrático | 2,673 | 0,094 |
+| Predicción sobre la prueba | 0,667 | 0,026 |
+| Evaluación (R², MAE, RMSE) | 2,292 | 0,135 |
+
+- **Memoria:** la tabla de datos ocupa 160,8 KiB y el ajuste lineal alcanza un
+  pico de 263,9 KiB. El proceso completo de Python usa 240,6 MiB, casi todo
+  por el intérprete y las librerías cargadas.
+- **Peso en disco:** el cuaderno ejecutado pesa 410,6 KiB, `data.xlsx` 362,2
+  KiB y las cinco figuras 434,9 KiB en total. Los siete archivos suman 1.207,7
+  KiB, cerca de 1,2 MiB.
+- **Lectura:** la etapa más lenta es la lectura del archivo Excel, unas 412
+  veces el tiempo de entrenar el modelo lineal. El costo del modelo es bajo; su
+  limitación es la información que aporta la edad.
+
+Los tiempos dependen del equipo y de su carga en el momento de la ejecución.
 
 ## Conclusiones
 
